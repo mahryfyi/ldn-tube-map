@@ -1,0 +1,60 @@
+/* Tube Map tokens. Source: Figma Playground, variable collection "Tube Map".
+   Keep in sync with tokens.json and tokens.ts.
+   :root is Light (the default). Dark is opt-in: <html data-theme="dark">. */
+:root {
+  /* Line colours: the official TfL hex */
+  --tube-line-bakerloo: #b36305;
+  --tube-line-central: #e32017;
+  --tube-line-district: #00782a;
+  --tube-line-jubilee: #a0a5a9;
+  --tube-line-northern: #000000;
+  --tube-line-piccadilly: #003688;
+  --tube-line-victoria: #0098d4;
+  --tube-line-waterloo-city: #95cdba;
+
+  /* The dark shade of each line: bead outline and train pill fill */
+  --tube-line-dark-bakerloo: #493012;
+  --tube-line-dark-central: #491512;
+  --tube-line-dark-district: #124926;
+  --tube-line-dark-jubilee: #2c2e30;
+  --tube-line-dark-northern: #000000;
+  --tube-line-dark-piccadilly: #003688;
+  --tube-line-dark-victoria: #123a49;
+  --tube-line-dark-waterloo-city: #1d3e33;
+
+  /* Reference mirror only: the real base-map colours live in the Mapbox style */
+  --tube-map-ground: #f3f1ec;
+
+  --tube-station-fill: #ffffff;
+  --tube-station-stroke: #1a1a1a;
+
+  /* Fallback pill fill. Each line's own pill uses --tube-line-dark-<line> */
+  --tube-train-fill: #1a1a1aeb; /* 92% opacity, from Figma */
+  --tube-train-arrow: #ffffff;
+
+  /* Status colours are for the line-status UI, not the map */
+  --tube-status-good-bg: #1e7b45;
+  --tube-status-good-fg: #ffffff;
+  --tube-status-minor-bg: #e48f11;
+  --tube-status-minor-fg: #ffffff;
+  --tube-status-severe-bg: #c9302a;
+  --tube-status-severe-fg: #ffffff;
+}
+
+/* Dark: lines lifted for the dark ground. --tube-line-dark-* is unused here. */
+[data-theme="dark"] {
+  --tube-line-bakerloo: #e08a1e;
+  --tube-line-central: #ff4a3d;
+  --tube-line-district: #1fbf5b;
+  --tube-line-jubilee: #8e959c;
+  --tube-line-northern: #f2f2f2;
+  --tube-line-piccadilly: #3d7bff;
+  --tube-line-victoria: #29b8f5;
+  --tube-line-waterloo-city: #95cdba;
+
+  --tube-map-ground: #0c0e12;
+
+  --tube-station-stroke: #0c0e12;
+
+  --tube-train-fill: #0c0e12;
+}

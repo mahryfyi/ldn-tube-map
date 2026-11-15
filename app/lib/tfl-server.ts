@@ -3,11 +3,15 @@
 //
 // It does three jobs:
 //  1. adds the secret key (TFL_APP_KEY from .env.local) to every request
-//  2. remembers each good answer for 30 seconds, so ten visitors cause one
+//  2. remembers each good answer for 20 seconds, so ten visitors cause one
 //     TfL call, not ten
 //  3. passes TfL's "too many requests" (429) message through honestly
 
-const CACHE_MS = 30_000;
+// Must stay SHORTER than how often the browser asks for trains (30s,
+// TRAIN_POLL_MS in page.tsx). If they were equal, a request arriving a
+// moment early would get the previous answer again: the train stalls on old
+// data, then dashes when the next update brings 60s of news at once.
+const CACHE_MS = 20_000;
 
 type Result = { status: number; body: string; retryAfter: string | null };
 const cache = new Map<string, { at: number; result: Promise<Result> }>();
