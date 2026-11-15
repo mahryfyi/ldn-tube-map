@@ -12,7 +12,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // data-theme switches Mahry DS and the tube tokens (tokens.css): "light" is
     // the default, "dark" is opt-in (also set THEME in lib/line.config.ts)
     <html lang="en" data-theme="light" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col bg-map-ground font-body text-fg-primary">{children}</body>
     </html>
   );
 }

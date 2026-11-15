@@ -1,0 +1,103 @@
+/* semantic.css — must switch, so: inline */
+/* Names follow the Figma variable collection "Tube Map" (Playground file):
+   Figma line/bakerloo ↔ --color-line-bakerloo ↔ tubeTokens.light.line.bakerloo.
+   Keep in sync with `light` / `dark` in tokens.ts. */
+@theme inline {
+    /* Line colour on the map and in the UI (status list, illustration, callout).
+       Light: official TfL. Dark: lifted for the dark ground. */
+    --color-line-bakerloo: var(--semantic-line-bakerloo);
+    --color-line-central: var(--semantic-line-central);
+    --color-line-district: var(--semantic-line-district);
+    --color-line-jubilee: var(--semantic-line-jubilee);
+    --color-line-northern: var(--semantic-line-northern);
+    --color-line-piccadilly: var(--semantic-line-piccadilly);
+    --color-line-victoria: var(--semantic-line-victoria);
+    --color-line-waterloo-city: var(--semantic-line-waterloo-city);
+
+    /* Dark shade of each line: station bead outline and train pill fill (Light only) */
+    --color-line-dark-bakerloo: var(--semantic-line-dark-bakerloo);
+    --color-line-dark-central: var(--semantic-line-dark-central);
+    --color-line-dark-district: var(--semantic-line-dark-district);
+    --color-line-dark-jubilee: var(--semantic-line-dark-jubilee);
+    --color-line-dark-northern: var(--semantic-line-dark-northern);
+    --color-line-dark-piccadilly: var(--semantic-line-dark-piccadilly);
+    --color-line-dark-victoria: var(--semantic-line-dark-victoria);
+    --color-line-dark-waterloo-city: var(--semantic-line-dark-waterloo-city);
+
+    /* Ground behind the lines. A reference mirror: the real base-map colours live
+       in the Mapbox style. Also the page and illustration background. */
+    --color-map-ground: var(--semantic-map-ground);
+
+    /* Station dot fill and outline (interchange rings, beads, illustration) */
+    --color-station-fill: var(--semantic-station-fill);
+    --color-station-stroke: var(--semantic-station-stroke);
+
+    /* Train pill fallback fill. Each line's pill uses line-dark/<line> instead. */
+    --color-train-fill: var(--semantic-train-fill);
+    /* Direction arrow inside the train pill */
+    --color-train-arrow: var(--semantic-train-arrow);
+
+    /* Status badge fill and label, one pair per level (UI only, not the map) */
+    --color-status-good-bg: var(--semantic-status-good-bg);
+    --color-status-good-fg: var(--semantic-status-good-fg);
+    --color-status-minor-bg: var(--semantic-status-minor-bg);
+    --color-status-minor-fg: var(--semantic-status-minor-fg);
+    --color-status-severe-bg: var(--semantic-status-severe-bg);
+    --color-status-severe-fg: var(--semantic-status-severe-fg);
+}
+
+/* Light is the default */
+:root,
+[data-theme="light"] {
+    --semantic-line-bakerloo: var(--palette-tfl-bakerloo);
+    --semantic-line-central: var(--palette-tfl-central);
+    --semantic-line-district: var(--palette-tfl-district);
+    --semantic-line-jubilee: var(--palette-tfl-jubilee);
+    --semantic-line-northern: var(--palette-tfl-northern);
+    --semantic-line-piccadilly: var(--palette-tfl-piccadilly);
+    --semantic-line-victoria: var(--palette-tfl-victoria);
+    --semantic-line-waterloo-city: var(--palette-tfl-waterloo-city);
+
+    --semantic-line-dark-bakerloo: var(--palette-tfl-bakerloo-shade);
+    --semantic-line-dark-central: var(--palette-tfl-central-shade);
+    --semantic-line-dark-district: var(--palette-tfl-district-shade);
+    --semantic-line-dark-jubilee: var(--palette-tfl-jubilee-shade);
+    --semantic-line-dark-northern: var(--palette-tfl-northern);
+    --semantic-line-dark-piccadilly: var(--palette-tfl-piccadilly);
+    --semantic-line-dark-victoria: var(--palette-tfl-victoria-shade);
+    --semantic-line-dark-waterloo-city: var(--palette-tfl-waterloo-city-shade);
+
+    --semantic-map-ground: var(--palette-paper);
+
+    --semantic-station-fill: var(--palette-white);
+    --semantic-station-stroke: var(--palette-ink);
+
+    --semantic-train-fill: var(--palette-ink-92);
+    --semantic-train-arrow: var(--palette-white);
+
+    --semantic-status-good-bg: var(--palette-signal-green);
+    --semantic-status-good-fg: var(--palette-white);
+    --semantic-status-minor-bg: var(--palette-signal-amber);
+    --semantic-status-minor-fg: var(--palette-white);
+    --semantic-status-severe-bg: var(--palette-signal-red);
+    --semantic-status-severe-fg: var(--palette-white);
+}
+
+/* Dark (opt-in: <html data-theme="dark">). Only what changes; the rest
+   (line-dark, station fill, train arrow, status) is the same as Light. */
+[data-theme="dark"] {
+    --semantic-line-bakerloo: var(--palette-tfl-bakerloo-lifted);
+    --semantic-line-central: var(--palette-tfl-central-lifted);
+    --semantic-line-district: var(--palette-tfl-district-lifted);
+    --semantic-line-jubilee: var(--palette-tfl-jubilee-lifted);
+    --semantic-line-northern: var(--palette-tfl-northern-lifted);
+    --semantic-line-piccadilly: var(--palette-tfl-piccadilly-lifted);
+    --semantic-line-victoria: var(--palette-tfl-victoria-lifted);
+    --semantic-line-waterloo-city: var(--palette-tfl-waterloo-city);
+
+    --semantic-map-ground: var(--palette-night);
+
+    --semantic-station-stroke: var(--palette-night);
+
+    --semantic-train-fill: var(--palette-night); /* drawn at 80% opacity (line.config.ts) */
+}

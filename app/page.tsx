@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import "./lib/callout.css"; // after Mapbox's CSS, so our callout rules win
 import { MAP_LINES } from "./lib/lines";
 import { createCallout } from "./lib/callout";
 import {
@@ -29,9 +30,10 @@ import {
     type Anchor,
     type Track,
 } from "./lib/track";
-import { StatusPanel } from "./components/molecules/StatusPanel";
-import { LiveIndicator } from "./components/atoms/live-indicator";
-import { MobileNotice } from "./components/sections/MobileNotice";
+import { StatusPanel } from "./components/StatusPanel";
+import { LiveIndicator } from "./components/LiveIndicator";
+import { MobileNotice } from "./components/MobileNotice";
+import Attribution from "./components/Attribution";
 import { TABLET_UP, useMediaQuery } from "./lib/use-media-query";
 
 const TRAIN_POLL_MS = 30_000; // ask TfL for train positions every 30 seconds
@@ -41,6 +43,7 @@ const GLIDE_MAX_MS = 6000; // ...a big one takes longer, but never more than thi
 const GLIDE_M_PER_S = 500; // speed limit for corrections: 0.5 km per second
 const DEG_TO_M = 111_320; // rough metres per degree, for off-track gaps
 const FRAME_MS = 50; // redraw the trains at most every 50ms (~20 times a second)
+const CALLOUT_EXIT_MS = 100; // callout fade-out; matches the transition in lib/callout.css
 // No good update for this long = the trains are stale (two missed polls). Measured
 // from when WE last fetched, not from TfL's timestamps: those are already 1-2 min old.
 const STALE_MS = 60_000;
@@ -230,7 +233,7 @@ export default function Home() {
             const popup = new mapboxgl.Popup({
                 closeButton: false,
                 offset: 12,
-                className: "train-popup", // our dark styling hooks on to this (globals.css)
+                className: "train-popup", // our callout styles hook on to this (lib/callout.css)
                 maxWidth: "none", // Mapbox wraps at 240px by default; our rows are short
             });
 
@@ -243,9 +246,22 @@ export default function Home() {
             let callout: ReturnType<typeof createCallout> | null = null;
             let calloutKey: string | null = null;
             let closedAt = 0; // when the last callout closed (ms)
+            // While the callout fades out: the timer that will remove it
+            let closing: ReturnType<typeof setTimeout> | undefined;
 
             // ageSeconds: how long ago TfL's data for this train arrived
             function showPopup(t: Train, ageSeconds: number) {
+                // Back on a train while the callout is fading out: cancel the
+                // removal. The fade reverses from wherever it got to (it's a
+                // transition, see lib/callout.css). If it's a different train,
+                // its content swaps in without the entrance, like sliding
+                // straight from one train to the next.
+                if (closing !== undefined) {
+                    clearTimeout(closing);
+                    closing = undefined;
+                    popup.removeClassName("train-popup-out");
+                    popup.addClassName("train-popup-quick");
+                }
                 const key = trainKey(t);
                 if (!callout || calloutKey !== key) {
                     callout = createCallout();
@@ -256,7 +272,7 @@ export default function Home() {
                 popup.setLngLat([t.lon, t.lat]);
                 if (!popup.isOpen()) {
                     // Sliding from one train straight to the next: skip the
-                    // entrance animation, like tooltips do (see globals.css)
+                    // entrance animation, like tooltips do (see lib/callout.css)
                     const quick = performance.now() - closedAt < 400;
                     if (quick) popup.addClassName("train-popup-quick");
                     else popup.removeClassName("train-popup-quick");
@@ -264,11 +280,21 @@ export default function Home() {
                 }
             }
 
+            // Fade out, then remove. A timer rather than the browser's
+            // "transition finished" event: that never fires if the fade didn't
+            // run (e.g. leaving mid-entrance), and the callout would stay stuck.
             function closePopup() {
-                if (!popup.isOpen()) return;
-                popup.remove();
-                calloutKey = null;
-                closedAt = performance.now();
+                if (!popup.isOpen() || closing !== undefined) return;
+                popup.addClassName("train-popup-out");
+                closing = setTimeout(() => {
+                    closing = undefined;
+                    popup.remove();
+                    // Mapbox remembers its classes and reapplies them on the
+                    // next open: take this off, or the next callout starts invisible
+                    popup.removeClassName("train-popup-out");
+                    calloutKey = null;
+                    closedAt = performance.now();
+                }, CALLOUT_EXIT_MS);
             }
 
             map.on("mousemove", "tube-trains", (e) => {
@@ -617,13 +643,14 @@ export default function Home() {
             <StatusPanel
                 statuses={statuses}
                 updatedAt={statusAt}
-                className="absolute top-4 left-4 w-[348px] shadow-md"
+                className="absolute top-4 left-4 w-[348px] shadow-sm"
             />
             <LiveIndicator
                 lastOkAt={feed.lastOkAt}
                 failed={feed.failed}
                 staleAfterMs={STALE_MS}
             />
+            <Attribution />
         </div>
     );
 }

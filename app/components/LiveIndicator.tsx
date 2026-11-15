@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ago, useNow } from "../lib/use-now";
+import "./LiveIndicator.css";
 
 // Says how fresh the train data is, only when there is something to say. It
 // ticks every second, so it lives in its own component: re-rendering it never
@@ -12,14 +13,6 @@ import { useEffect, useState } from "react";
 //                                        update 3m ago" (a spinner can't say that)
 //   healthy                           -> nothing at all
 
-// 12s, 3m, 2h: the coarsest unit that still says something
-function ago(ms: number) {
-    const s = Math.max(0, Math.round(ms / 1000));
-    if (s < 60) return `${s}s`;
-    if (s < 3600) return `${Math.floor(s / 60)}m`;
-    return `${Math.floor(s / 3600)}h`;
-}
-
 export function LiveIndicator({
     lastOkAt,
     failed,
@@ -29,16 +22,10 @@ export function LiveIndicator({
     failed: boolean; // did the most recent attempt fail?
     staleAfterMs: number;
 }) {
-    // Re-render once a second so "12s ago" counts up. The clock is only read
-    // inside the effect (browser only): Next.js refuses Date.now() during the
-    // server render, where it would freeze at build time. The first render is
-    // always "Loading" (no data yet), which doesn't need the time.
-    const [now, setNow] = useState(0);
-    useEffect(() => {
-        setNow(Date.now());
-        const timer = setInterval(() => setNow(Date.now()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+    // Re-renders once a second so "3m ago" counts up. 0 on the server and until
+    // the clock starts; the first render is always "Loading" (no data yet),
+    // which doesn't need the time.
+    const now = useNow();
 
     // Healthy (or waiting): which of the three is it?
     const waiting =

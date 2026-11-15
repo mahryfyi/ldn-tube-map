@@ -1,6 +1,7 @@
 "use client";
 
-import { useReducedMotion } from "../../lib/use-media-query";
+import { useReducedMotion } from "../lib/use-media-query";
+import { cn } from "../lib/utils";
 
 // The strip at the top of the phone screen (Figma: mobile, 87:485 → illustration-strip).
 // A stand-in for the map: three lines, a few stations, five train pills.
@@ -39,6 +40,15 @@ const TRACK_D: Record<Line, { fwd: string; rev: string }> = {
         fwd: "M-47.9 62.7L-3.9 62C126.1 60 256.1 106 366.1 98L410 94.8",
         rev: "M410 94.8L366.1 98C256.1 106 126.1 60 -3.9 62L-47.9 62.7",
     },
+};
+
+// Each line's stroke colour as a Tailwind class. Written out in full (never
+// built from a template like `stroke-line-${line}`): Tailwind only creates the
+// classes and colour variables it can find spelled out in the code.
+const STROKE: Record<Line, string> = {
+    district: "stroke-line-district",
+    victoria: "stroke-line-victoria",
+    piccadilly: "stroke-line-piccadilly",
 };
 
 // Each pill: where Figma puts it (x, y, angle), and how far round its loop it
@@ -83,7 +93,7 @@ export function TrainIllustration({ className }: { className?: string }) {
 
     return (
         <div
-            className={`overflow-hidden rounded-xl bg-(--tube-map-ground) ${className ?? ""}`}
+            className={cn("overflow-hidden rounded-xl bg-map-ground", className)}
         >
             {/* Decorative: the status list below says everything this says */}
             <svg
@@ -100,7 +110,7 @@ export function TrainIllustration({ className }: { className?: string }) {
                         fill="none"
                         strokeWidth={12}
                         strokeLinejoin="round"
-                        style={{ stroke: `var(--tube-line-${line})` }}
+                        className={STROKE[line]}
                     />
                 ))}
 
@@ -112,10 +122,7 @@ export function TrainIllustration({ className }: { className?: string }) {
                         cy={cy}
                         r={3.75}
                         strokeWidth={1.5}
-                        style={{
-                            fill: "var(--tube-station-fill)",
-                            stroke: "var(--tube-station-stroke)",
-                        }}
+                        className="fill-station-fill stroke-station-stroke"
                     />
                 ))}
                 <circle
@@ -123,10 +130,7 @@ export function TrainIllustration({ className }: { className?: string }) {
                     cy={INTERCHANGE[1]}
                     r={7.875}
                     strokeWidth={2.25}
-                    style={{
-                        fill: "var(--tube-station-fill)",
-                        stroke: "var(--tube-station-stroke)",
-                    }}
+                    className="fill-station-fill stroke-station-stroke"
                 />
 
                 {/* Trains: a near-black pill with a line-coloured outline and an
@@ -148,15 +152,12 @@ export function TrainIllustration({ className }: { className?: string }) {
                                 height={18}
                                 rx={9}
                                 strokeWidth={3}
-                                style={{
-                                    fill: "var(--tube-train-fill)",
-                                    stroke: `var(--tube-line-${t.line})`,
-                                }}
+                                className={cn("fill-train-fill", STROKE[t.line])}
                             />
                             <path
                                 d={ARROW}
                                 transform="translate(-9 -9)"
-                                fill="#fff"
+                                className="fill-train-arrow"
                             />
                             {!reduce && (
                                 <animateMotion

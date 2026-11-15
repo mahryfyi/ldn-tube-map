@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tube map
 
-## Getting Started
+A geographic London Underground map with live-ish trains. TfL publishes no train
+positions, only predicted arrivals at stations, so each train's position is
+estimated from those predictions and glides between updates.
 
-First, run the development server:
+A learning prototype: built to understand how APIs work (keys, proxies, polling,
+rate limits, GeoJSON). Estimates sometimes jump; that's expected.
+
+- **Desktop / tablet (768px and up):** the map, with a line-status panel and a
+  callout when you hover a train.
+- **Phone:** no map, just live line status and a link to open it on a bigger screen.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # then fill in the values
+npm install
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+See `.env.example` for details.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Name | Where it's used | Secret? |
+| --- | --- | --- |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Browser (map tiles) | No, public by design. Restrict it by URL in Mapbox. |
+| `TFL_APP_KEY` | Server only (`app/lib/tfl-server.ts`) | **Yes.** Never prefix with `NEXT_PUBLIC_`. |
+| `NEXT_PUBLIC_MAPBOX_STYLE_URL_LIGHT` | Optional Light map style | No |
+| `NEXT_PUBLIC_MAPBOX_STYLE_URL` | Dark map style (Dark isn't switched on yet) | No |
 
-## Learn More
+## How it fits together
 
-To learn more about Next.js, take a look at the following resources:
+- The browser never talks to TfL. It asks our own routes in `app/api/`
+  (`/api/status`, `/api/arrivals/[line]`, `/api/route-sequence/[line]`), which add
+  the secret key, cache answers for 20 seconds and pass TfL's reply on.
+- `app/page.tsx` draws the map (Mapbox GL JS) and polls for trains every 30 s.
+- `app/lib/` holds the logic: TfL data and train estimates (`tfl.ts`, `track.ts`,
+  `smooth.ts`), map layers (`map-layers.ts`), the hover callout (`callout.ts`) and
+  look-and-feel constants (`line.config.ts`).
+- `app/components/` holds the UI. Buttons, cards and type come from
+  [Mahry DS](https://github.com/mahryme/mahry-ds).
+- `app/tokens/` holds the colours, in the Mahry DS layout: `colours/primitive.css`
+  (raw TfL colours) and `colours/semantic.css` (roles, Light/Dark).
+  `tokens.ts` mirrors both for Mapbox, which can't read CSS variables. Change a
+  colour in both places.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data and attribution
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Unofficial learning project, not affiliated with or endorsed by Transport for London.
 
-## Deploy on Vercel
+- Line status, route geometry and train predictions come from the TfL Unified API under the [TfL Transport Data Service licence](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service) (based on OGL v2.0). The licence requires the on-screen credits in `app/components/Attribution.tsx`: "Powered by TfL Open Data", the Ordnance Survey notice and the Geomni notice. Keep them visible.
+- Train positions are estimates inferred from predicted arrivals, not GPS.
+- Base map © Mapbox © OpenStreetMap contributors, shown by Mapbox GL in the bottom-right of the map. Don't hide it.
+- Don't use TfL logos, roundels or other branding.
+- The TfL key (`TFL_APP_KEY`) stays server-side; the licence allows up to 500 calls per minute per feed, and `app/lib/tfl-server.ts` caches responses for 20 seconds.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Any Next.js host works (e.g. Vercel). Before going live:
+
+1. Set the environment variables above on the host.
+2. Add the production domain to the Mapbox token's allowed URLs, or the map
+   won't load there.
+3. `npm run build` locally first: it fails if anything breaks the server/browser split.

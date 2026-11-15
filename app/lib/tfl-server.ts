@@ -1,5 +1,9 @@
 // SERVER-ONLY helper: the one place that talks to TfL and knows the secret key.
-// (Only files inside app/api/ import this, so it never ships to the browser.)
+// Only files inside app/api/ import this. The line below enforces it: if a
+// browser component ever imports this file, the build fails instead of
+// shipping the key-handling code to the browser.
+import "server-only";
+
 //
 // It does three jobs:
 //  1. adds the secret key (TFL_APP_KEY from .env.local) to every request

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../../../lib/utils";
+import { cn } from "../lib/utils";
 
 // A borderless pill showing a line's service status. Matches Figma "StatusBadge"
 // (77:57): 8px / 2px padding, label/sm text. Colours come from the tube status
@@ -10,9 +10,9 @@ export const statusBadgeVariants = cva(
     {
         variants: {
             status: {
-                good: "bg-(--tube-status-good-bg) text-(--tube-status-good-fg)",
-                minor: "bg-(--tube-status-minor-bg) text-(--tube-status-minor-fg)",
-                severe: "bg-(--tube-status-severe-bg) text-(--tube-status-severe-fg)",
+                good: "bg-status-good-bg text-status-good-fg",
+                minor: "bg-status-minor-bg text-status-minor-fg",
+                severe: "bg-status-severe-bg text-status-severe-fg",
             },
         },
         defaultVariants: { status: "good" },

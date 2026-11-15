@@ -1,0 +1,78 @@
+/* ---------------------------------------------------------------------------
+   Live indicator (top right), dark glass (not yet redesigned in Figma).
+   A spinner while we wait for data; a red pill if TfL can't be reached.
+   Imported by LiveIndicator.tsx.
+   --------------------------------------------------------------------------- */
+.live-chip,
+.live-spinner {
+  display: inline-flex;
+  align-items: center;
+  background: rgb(24 24 27 / 0.78);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-top-color: rgb(255 255 255 / 0.2);
+  box-shadow: /* Tailwind-style shadow-sm */
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  pointer-events: none;
+}
+
+/* The failure pill */
+.live-chip {
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: #fff;
+  font: 500 12px/1.4 var(--font-body, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums; /* the counting minutes don't wobble */
+  white-space: nowrap;
+}
+.live-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--semantic-status-severe-bg);
+}
+
+/* The spinner: a glass circle with a ring turning inside. It appears after
+   300 ms, so a quick load never flashes it. */
+.live-spinner {
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  animation: spinner-in 150ms 300ms backwards;
+}
+.live-spinner-ring {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 0.25);
+  border-top-color: #fff; /* the bright arc is what appears to turn */
+  border-radius: 50%;
+  animation: spinner-turn 800ms linear infinite; /* constant motion: linear */
+}
+@keyframes spinner-in {
+  from { opacity: 0; }
+}
+@keyframes spinner-turn {
+  to { transform: rotate(360deg); }
+}
+/* Reduced motion: no turning, a gentle pulse instead */
+@media (prefers-reduced-motion: reduce) {
+  .live-spinner-ring {
+    border-color: #fff;
+    animation: spinner-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes spinner-pulse {
+    50% { opacity: 0.3; }
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .live-chip,
+  .live-spinner {
+    background: rgb(24 24 27);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

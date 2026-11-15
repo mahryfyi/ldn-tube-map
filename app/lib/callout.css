@@ -1,0 +1,181 @@
+/* ---------------------------------------------------------------------------
+   Train callout (the popup that follows a hovered train). Built in lib/callout.ts.
+   Figma: Playground → TrainCallout (77:291). A white card with a track bar in the
+   line colour. Mapbox draws its own box and pointer; we restyle both.
+   Imported in page.tsx straight after Mapbox's own CSS, so these rules win.
+   Colours use --semantic-* (always defined), not Tailwind's --color-*, which
+   Tailwind leaves out when it doesn't see them used.
+   --------------------------------------------------------------------------- */
+.train-popup {
+  --callout-bg: var(--semantic-container-high);
+  --callout-ease: cubic-bezier(0.23, 1, 0.32, 1); /* strong ease-out */
+  /* Entrance (a one-shot, so keyframes rather than a transition: it starts the
+     moment the class appears, whatever Mapbox did to the element before) */
+  animation: callout-fade 140ms var(--callout-ease) backwards;
+  /* Exit: a quick fade, shorter than the entrance. A transition rather than
+     keyframes, so if the mouse comes back mid-fade it reverses smoothly from
+     wherever it got to. Keep 100ms in sync with CALLOUT_EXIT_MS in page.tsx. */
+  transition: opacity 100ms var(--callout-ease);
+}
+.train-popup-out {
+  opacity: 0;
+}
+@keyframes callout-fade {
+  from { opacity: 0; }
+}
+@keyframes callout-grow {
+  from { transform: scale(0.96); }
+}
+
+/* The box: 248px, 12px padding, 16px corners, Tailwind-style shadow-sm */
+.train-popup .mapboxgl-popup-content {
+  width: 248px;
+  padding: 12px;
+  background: var(--callout-bg);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  color: var(--semantic-fg-primary);
+  font: 500 12px/16px var(--font-body, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums; /* digits all the same width, so ticking numbers don't wobble */
+  pointer-events: none; /* the box must never steal the mouse from the train */
+  animation: callout-grow 140ms var(--callout-ease) backwards;
+}
+
+/* Entrance: fade in and grow from 96%, never from nothing. Only the first
+   callout animates; sliding straight to the next train skips it. */
+.train-popup-quick,
+.train-popup-quick .mapboxgl-popup-content {
+  animation: none;
+}
+
+/* Grow from the pointer tip, not the centre. Mapbox adds a class saying which
+   side of the box the tip is on. */
+.train-popup.mapboxgl-popup-anchor-bottom .mapboxgl-popup-content { transform-origin: 50% 100%; }
+.train-popup.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-content { transform-origin: 0 100%; }
+.train-popup.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-content { transform-origin: 100% 100%; }
+.train-popup.mapboxgl-popup-anchor-top .mapboxgl-popup-content { transform-origin: 50% 0; }
+.train-popup.mapboxgl-popup-anchor-top-left .mapboxgl-popup-content { transform-origin: 0 0; }
+.train-popup.mapboxgl-popup-anchor-top-right .mapboxgl-popup-content { transform-origin: 100% 0; }
+.train-popup.mapboxgl-popup-anchor-left .mapboxgl-popup-content { transform-origin: 0 50%; }
+.train-popup.mapboxgl-popup-anchor-right .mapboxgl-popup-content { transform-origin: 100% 50%; }
+
+/* The pointer: Mapbox colours a different side depending on where the popup sits */
+.train-popup.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.train-popup.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.train-popup.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: var(--callout-bg);
+}
+.train-popup.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.train-popup.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.train-popup.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: var(--callout-bg);
+}
+.train-popup.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: var(--callout-bg);
+}
+.train-popup.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: var(--callout-bg);
+}
+
+/* Header: a short bar in the line colour, then "District line" / "Towards …" */
+.callout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.callout-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.callout-ident {
+  width: 16px;
+  height: 6px;
+  margin-bottom: 4px;
+  border-radius: 100px;
+}
+.callout-line {
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.callout-towards {
+  color: var(--semantic-fg-secondary);
+  white-space: nowrap;
+}
+
+/* The stretch: a divider, the two station names, then a track with a fill */
+.callout-stretch {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--semantic-border-secondary);
+}
+.callout-names {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.callout-names > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.callout-from {
+  color: var(--semantic-fg-tertiary);
+}
+.callout-to {
+  margin-left: auto;
+}
+/* A train parked on its next station has no "from": the name sits on the left */
+.callout-from:empty {
+  display: none;
+}
+.callout-from:empty + .callout-to {
+  margin-left: 0;
+}
+.callout-rail {
+  position: relative;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--semantic-container-low);
+}
+/* The track's recessed look: an inner shadow drawn over the fill */
+.callout-rail::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 4px rgb(0 0 0 / 0.25);
+}
+.callout-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Footer: how old our data is (quiet), when it arrives (bright) */
+.callout-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  white-space: nowrap;
+}
+.callout-age {
+  color: var(--semantic-fg-tertiary);
+}
+
+/* Reduced motion: fade only, no scaling */
+@media (prefers-reduced-motion: reduce) {
+  .train-popup .mapboxgl-popup-content {
+    animation: none;
+  }
+}

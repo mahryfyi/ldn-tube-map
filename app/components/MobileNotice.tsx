@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button, Container } from "@mahry/ds";
-import type { LineStatus } from "../../lib/tfl";
-import { StatusPanel } from "../molecules/StatusPanel";
-import { TrainIllustration } from "../molecules/TrainIllustration";
+import type { LineStatus } from "../lib/tfl";
+import Attribution from "./Attribution";
+import { StatusPanel } from "./StatusPanel";
+import { TrainIllustration } from "./TrainIllustration";
 
 // The phone screen (Figma: mobile, 87:485). Below the tablet breakpoint we
 // don't load the map at all (page.tsx decides), so this is what's shown.
@@ -74,6 +75,9 @@ export function MobileNotice({
                     aria-live="polite"
                     className="mt-auto h-12 w-full shrink-0"
                 />
+
+                {/* The status data is TfL's, so the licence credits go here too */}
+                <Attribution inline />
             </Container>
         </main>
     );

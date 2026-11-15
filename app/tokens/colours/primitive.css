@@ -1,0 +1,47 @@
+/* primitive.css — raw colours, never switch. Components don't use these directly:
+   they use the semantic roles in semantic.css, which point here.
+   Keep in sync with `palette` in tokens.ts (Mapbox reads that copy).
+   White comes from Mahry DS (--palette-white). */
+@theme {
+    /* Official TfL line colours, all 11 lines */
+    --palette-tfl-bakerloo: #b36305;
+    --palette-tfl-central: #e32017;
+    --palette-tfl-circle: #ffd300;
+    --palette-tfl-district: #00782a;
+    --palette-tfl-hammersmith-city: #f3a9bb;
+    --palette-tfl-jubilee: #a0a5a9;
+    --palette-tfl-metropolitan: #9b0056;
+    --palette-tfl-northern: #000000;
+    --palette-tfl-piccadilly: #003688;
+    --palette-tfl-victoria: #0098d4;
+    --palette-tfl-waterloo-city: #95cdba;
+
+    /* A dark shade of each line colour. Northern and Piccadilly are already dark
+       enough, so they use their official colour. */
+    --palette-tfl-bakerloo-shade: #493012;
+    --palette-tfl-central-shade: #491512;
+    --palette-tfl-district-shade: #124926;
+    --palette-tfl-jubilee-shade: #2c2e30;
+    --palette-tfl-victoria-shade: #123a49;
+    --palette-tfl-waterloo-city-shade: #1d3e33;
+
+    /* Line colours lifted for a dark ground. Waterloo & City is light enough as it is. */
+    --palette-tfl-bakerloo-lifted: #e08a1e;
+    --palette-tfl-central-lifted: #ff4a3d;
+    --palette-tfl-district-lifted: #1fbf5b;
+    --palette-tfl-jubilee-lifted: #8e959c; /* mid-grey, to separate it from Northern */
+    --palette-tfl-northern-lifted: #f2f2f2; /* light, because black can't glow */
+    --palette-tfl-piccadilly-lifted: #3d7bff;
+    --palette-tfl-victoria-lifted: #29b8f5;
+
+    /* Grounds and ink */
+    --palette-paper: #f3f1ec; /* light map ground */
+    --palette-night: #0c0e12; /* dark map ground */
+    --palette-ink: #1a1a1a;
+    --palette-ink-92: #1a1a1aeb; /* ink at 92% opacity */
+
+    /* Signal colours for line status */
+    --palette-signal-green: #1e7b45;
+    --palette-signal-amber: #e48f11;
+    --palette-signal-red: #c9302a;
+}

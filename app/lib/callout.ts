@@ -3,7 +3,7 @@
 // It is built ONCE per hovered train (createCallout) and then updated in place
 // about 20 times a second (update). Rebuilding the whole thing every frame
 // would throw away the DOM each time, so nothing could animate or stay stable.
-// Styles live in globals.css (classes starting "callout-").
+// Styles live next door in callout.css (classes starting "callout-").
 //
 // Only textContent and style are ever set, never HTML strings, so odd text
 // from TfL can't inject markup.

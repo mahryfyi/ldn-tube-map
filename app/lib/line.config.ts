@@ -87,7 +87,7 @@ export const TRAIN = {
   height: 6,
   arrowSize: 6,
   outline: 1, // in the line colour, outside the pill
-  // Light is 1 because the token already carries 80% (#1A1A1ACC); applying it
+  // Light is 1 because the token already carries 92% (#1A1A1AEB); applying it
   // twice would fade the pill too much. Dark: 80%, or 90% if beads show through.
   fillOpacity: { light: 1, dark: 0.8 },
   pixelRatio: 4, // draw the image 4× so it stays crisp when scaled up
