@@ -630,27 +630,33 @@ export default function Home() {
         };
     }, []);
 
-    // Phones: the status list. (The server always renders this one, because it
-    // can't know the window width; on a wide screen it's replaced as soon as the
-    // browser takes over.)
-    if (!showMap) {
-        return <MobileNotice statuses={statuses} updatedAt={statusAt} />;
-    }
-
+    // Both layouts are always in the page; CSS shows exactly one. The server
+    // can't know the window width, but CSS media queries work from the very first
+    // paint, so a refresh never flashes the wrong layout. (md = 768px = TABLET_UP.)
+    // JavaScript (showMap) only decides whether to create the Mapbox map, so
+    // phones still never load it.
     return (
-        <div className="relative h-screen w-screen">
-            <div ref={mapContainer} className="h-full w-full" />
-            <StatusPanel
-                statuses={statuses}
-                updatedAt={statusAt}
-                className="absolute top-4 left-4 w-[348px] shadow-sm"
-            />
-            <LiveIndicator
-                lastOkAt={feed.lastOkAt}
-                failed={feed.failed}
-                staleAfterMs={STALE_MS}
-            />
-            <Attribution />
-        </div>
+        <>
+            {/* Phones: the status list */}
+            <div className="md:hidden">
+                <MobileNotice statuses={statuses} updatedAt={statusAt} />
+            </div>
+
+            {/* Tablet and up: the map */}
+            <div className="relative hidden h-screen w-screen md:block">
+                <div ref={mapContainer} className="h-full w-full" />
+                <StatusPanel
+                    statuses={statuses}
+                    updatedAt={statusAt}
+                    className="absolute top-4 left-4 w-[348px] shadow-sm"
+                />
+                <LiveIndicator
+                    lastOkAt={feed.lastOkAt}
+                    failed={feed.failed}
+                    staleAfterMs={STALE_MS}
+                />
+                <Attribution />
+            </div>
+        </>
     );
 }
