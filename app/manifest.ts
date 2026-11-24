@@ -1,8 +1,5 @@
 import type { MetadataRoute } from "next";
 
-// The site is a static export, so the manifest has to be built at build time.
-export const dynamic = "force-static";
-
 /**
  * Web app manifest: tells Android/Chrome which icons to use when the site is
  * saved to a home screen or installed. The 192 and 512 icons are full-bleed
